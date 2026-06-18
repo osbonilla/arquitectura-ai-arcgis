@@ -263,39 +263,6 @@ assistant.logEnabled = true; // Solo durante desarrollo
 
 ---
 
-## Insumos Requeridos por el Cliente
-
-### 🔴 CRÍTICOS — Sin estos no se puede iniciar
-
-| # | Insumo | Detalle | Responsable |
-|---|--------|---------|-------------|
-| 1 | **ArcGIS Online con licencia activa** | Necesario para alojar las capas replicadas y usar el AI Assistant | Cliente |
-| 2 | **Créditos de ArcGIS Online** | Las operaciones de IA (embeddings, consultas LLM) consumen créditos de AGOL | Cliente |
-| 3 | **Acceso de administrador a ArcGIS Enterprise** | Para configurar la sincronización / colaboración distribuida | Cliente |
-| 4 | **Inventario de capas de Enterprise** | Lista de Feature Services a replicar, con descripción de campos clave | Cliente |
-| 5 | **Computadoras con acceso a internet** | Los técnicos usuarios finales de la app necesitan conectividad | Cliente (ya tienen) |
-
-### 🟡 IMPORTANTES — Para comenzar el desarrollo
-
-| # | Insumo | Detalle | Responsable |
-|---|--------|---------|-------------|
-| 6 | **Definición de casos de uso** | Las 5-10 preguntas más frecuentes que harán los técnicos | Cliente |
-| 7 | **Esquema de datos de capas clave** | Nombres de campos, tipos de datos, rangos de valores | Cliente |
-| 8 | **Política de actualización de datos** | ¿Cada cuánto deben sincronizarse los datos de Enterprise a AGOL? | Cliente |
-| 9 | **Permisos en ArcGIS Online** | Quién puede ver qué datos — configuración de grupos y roles | Cliente |
-| 10 | **Repositorio Git** | Para versionar el código de la app web | Proveedor |
-
-### 🟢 DESEABLES — Para producción robusta
-
-| # | Insumo | Detalle | Responsable |
-|---|--------|---------|-------------|
-| 11 | **Dominio propio para la app** | URL tipo `asistente-gis.cliente.com` | Cliente |
-| 12 | **Servidor web para alojar la app** | IIS, Nginx, o Azure Static Web Apps | Proveedor |
-| 13 | **Sistema de log de consultas** | Registrar qué preguntan los técnicos para mejora continua | Proveedor |
-| 14 | **Metadatos de capas completos** | Aliases de campos, descripciones, para mejorar calidad del LLM | Cliente |
-
----
-
 ## Infraestructura y Capacidad
 
 ### ¿Qué servidores se necesitan?
@@ -317,20 +284,12 @@ Con el enfoque híbrido usando el AI Assistant Component de Esri, la infraestruc
 La aplicación web es estática (HTML + JavaScript). Los requerimientos son mínimos:
 
 ```
-Opción A — Servidor interno (recomendado para intranet):
+Servidor interno (recomendado para intranet):
   - IIS en Windows Server existente, o
   - Nginx en Linux
   - Disco: < 50 MB (app estática)
   - CPU/RAM: cualquier servidor web básico
   - Puerto 443 con certificado SSL
-
-Opción B — Azure Static Web Apps (si tiene Azure):
-  - Tier Free o Standard (~$9/mes)
-  - Deploy automático desde GitHub
-
-Opción C — ArcGIS Enterprise Web Adaptor:
-  - Publicar la app desde el mismo servidor de Enterprise
-  - No requiere servidor adicional
 ```
 
 ### Requerimientos de red
@@ -347,68 +306,6 @@ ArcGIS Enterprise (servidor on-prem)
       └── ArcGIS Online (para sincronización de datos)
           ├── Si no tiene internet: sincronización manual/programada
           └── Si tiene internet limitado: habilitar solo salida a arcgis.com
-```
-
----
-
-## Implementación Paso a Paso
-
-### Fase A — Configuración de Datos (responsabilidad del cliente con apoyo técnico)
-
-```
-Semana 1, Días 1-2: Inventario y selección de capas
-  ├── Identificar las capas de Enterprise a sincronizar
-  ├── Verificar que sean Feature Services (único tipo soportado por AI Assistant)
-  └── Documentar campos clave y su significado
-
-Semana 1, Días 3-5: Sincronización Enterprise → AGOL
-  ├── Configurar ArcGIS Distributed Collaboration (método recomendado):
-  │     Portal Enterprise → Collaborations → Create Collaboration
-  │     Seleccionar capas a sincronizar
-  │     Definir frecuencia de actualización
-  └── Verificar que los datos aparecen correctamente en AGOL
-```
-
-### Fase B — Configuración del WebMap y Embeddings
-
-```
-Semana 2, Días 1-2: Crear y configurar el WebMap
-  ├── Crear nuevo WebMap en ArcGIS Online
-  ├── Agregar solo las capas necesarias (menos es más)
-  ├── Configurar popups descriptivos
-  ├── Configurar aliases de campos en español
-  └── Activar filtros y visibilidad por escala
-
-Semana 2, Días 3-4: Generar metadatos con IA (opcional pero recomendado)
-  ├── Usar el "Item details assistant (beta)" de AGOL
-  ├── Generar descripciones automáticas de capas y campos
-  ├── Revisar y corregir descripciones generadas
-  └── Guardar cambios
-
-Semana 2, Día 5: Generar Embeddings
-  ├── Abrir el item del WebMap en AGOL
-  ├── Ir a Settings → "Manage AI vector embeddings"
-  ├── Clic en "Generate Embeddings"
-  └── Esperar proceso (5-30 min según cantidad de capas/campos)
-```
-
-### Fase C — Desarrollo de la App Web
-
-```
-Semana 3: Desarrollo de la aplicación
-  ├── Setup del proyecto (HTML + JS con ArcGIS SDK 5.0)
-  ├── Integrar arcgis-map con el WebMap configurado
-  ├── Integrar arcgis-assistant con los 3 agentes
-  ├── Configurar prompts sugeridos según casos de uso del cliente
-  ├── Personalizar interfaz (logo, colores, título)
-  └── Pruebas con usuarios técnicos reales
-
-Semana 4: Deploy y ajustes
-  ├── Publicar app en servidor web
-  ├── Pruebas de aceptación con el cliente
-  ├── Ajuste de prompts sugeridos según feedback
-  ├── Capacitación a usuarios
-  └── Documentación de uso
 ```
 
 ---
@@ -462,101 +359,6 @@ Recomendación: Solo replicar a AGOL datos que el técnico
 ya puede ver en su trabajo habitual. No replicar datos
 sensibles que no deban salir de la organización.
 ```
-
----
-
-## Estimación de Costos
-
-### Costos directos del proyecto
-
-| Ítem | Costo Estimado |
-|------|---------------|
-| Desarrollo app web (3-4 semanas, 1 desarrollador) | $3,000 - $6,000 USD (único) |
-| Configuración sincronización Enterprise-AGOL | $500 - $1,000 USD (único) |
-| Servidor web (si se usa Azure Static Web Apps) | ~$9 USD/mes |
-| **Total implementación** | **~$3,500 - $7,000 USD** |
-
-### Costos operativos mensuales
-
-| Ítem | Costo |
-|------|-------|
-| ArcGIS Online (licencias existentes del cliente) | Ya incluido |
-| Créditos AGOL por uso de IA | Variable (~$50-200 USD/mes según uso) |
-| Servidor web | $0-$9 USD/mes |
-| **Total operativo** | **~$50 - $210 USD/mes** |
-
-> Comparado con la arquitectura MCP completa en Azure (~$900-1,500 USD/mes), el ahorro operativo es de más del 85%.
-
----
-
-## Roadmap de Implementación
-
-```
-SEMANA 1 — Relevamiento y datos
-  ├── [ ] Inventario de Feature Services en Enterprise
-  ├── [ ] Selección de capas a sincronizar (con el cliente)
-  ├── [ ] Configuración de ArcGIS Distributed Collaboration
-  ├── [ ] Verificación de datos en ArcGIS Online
-  └── [ ] Definición de 5-10 casos de uso prioritarios
-
-SEMANA 2 — WebMap y embeddings
-  ├── [ ] Creación del WebMap en AGOL
-  ├── [ ] Configuración de metadatos de capas (aliases, descripciones)
-  ├── [ ] Uso del Item Details Assistant para generar descripciones
-  ├── [ ] Revisión y corrección de metadatos
-  └── [ ] Generación de embeddings del WebMap
-
-SEMANA 3 — Desarrollo de la app
-  ├── [ ] Setup proyecto (HTML/JS, ArcGIS SDK 5.0)
-  ├── [ ] Integración arcgis-map + arcgis-assistant
-  ├── [ ] Configuración de agentes y prompts sugeridos
-  ├── [ ] Personalización visual (branding del cliente)
-  └── [ ] Pruebas internas
-
-SEMANA 4 — Deploy y go-live
-  ├── [ ] Publicación en servidor web
-  ├── [ ] Pruebas con usuarios reales
-  ├── [ ] Ajuste de prompts y configuración
-  ├── [ ] Capacitación a técnicos
-  └── [ ] Entrega y documentación
-```
-
----
-
-## Preguntas para la Reunión
-
-### Lo que debemos preguntar al cliente
-
-1. **¿Cuántos créditos de ArcGIS Online tienen disponibles?** El AI Assistant los consume. Si no tienen suficientes, hay que prever la compra adicional.
-
-2. **¿Cuáles son las 5 preguntas que los técnicos harían con más frecuencia?** Esto define los `suggestedPrompts` y los metadatos a priorizar.
-
-3. **¿Qué capas de Enterprise son candidatas a sincronizar?** Necesitamos el inventario con nombres, descripción y sensibilidad del dato.
-
-4. **¿Con qué frecuencia cambian los datos?** Para definir la frecuencia de sincronización (tiempo real, horaria, diaria, semanal).
-
-5. **¿Tienen servidor web disponible para publicar la app?** O ¿prefieren Azure Static Web Apps?
-
-6. **¿Cuántos técnicos usarán el asistente?** Para estimar consumo de créditos AGOL.
-
-7. **¿Los metadatos de las capas están en español?** La calidad del LLM mejora significativamente con buenos metadatos en el idioma del usuario.
-
-### Lo que el cliente nos puede preguntar
-
-**¿Los datos de Enterprise saldrán a internet?**
-> Solo los datos que el cliente decida replicar a ArcGIS Online. El cliente controla qué capas se sincronizan. Los datos que permanezcan únicamente en Enterprise nunca tocan internet.
-
-**¿Quién controla el LLM?**
-> Esri, a través de ArcGIS Online. No hay configuración de Azure OpenAI de nuestra parte — el cliente no necesita contratar ese servicio por separado.
-
-**¿Qué pasa cuando el componente salga de beta?**
-> Esri seguirá desarrollándolo. Las actualizaciones del SDK se aplicarán actualizando la versión del paquete npm. La API está diseñada para ser compatible hacia adelante.
-
-**¿Pueden los técnicos modificar datos con el asistente?**
-> No por defecto. El `arcgis-assistant-data-exploration-agent` es solo de lectura. La edición requiere configuración explícita adicional.
-
-**¿Funciona en cualquier navegador?**
-> Sí. Chrome, Edge, Firefox, Safari modernos. No requiere instalación en la computadora del técnico.
 
 ---
 
