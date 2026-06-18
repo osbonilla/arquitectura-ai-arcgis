@@ -64,10 +64,10 @@ El cliente tiene la siguiente situación:
 ┌─────────────────────────────────────────────────────────────────┐
 │  ArcGIS ENTERPRISE (Intranet — sin internet)                    │
 │                                                                 │
-│  Feature Services  ──────────────────────────────────────────► │
-│  Map Services       [Sincronización / Replica hacia AGOL]      │
-│  Geoprocessing      (Scheduled sync, Feature Service Sync,     │
-│  Capas críticas      o exportación manual periódica)           │
+│  Feature Services  ──────────────────────────────────────────►  │
+│  Map Services       [Sincronización / Replica hacia AGOL]       │
+│  Geoprocessing      (Scheduled sync, Feature Service Sync,      │
+│  Capas críticas      o exportación manual periódica)            │
 └──────────────────────────────────────────────┬──────────────────┘
                                                │
                                     Datos replicados
@@ -76,9 +76,9 @@ El cliente tiene la siguiente situación:
 ┌─────────────────────────────────────────────────────────────────┐
 │  ArcGIS ONLINE (Con internet)                                   │
 │                                                                 │
-│  Hosted Feature Layers  ◄── datos replicados de Enterprise     │
-│  WebMaps configurados   ◄── con embeddings generados           │
-│  LLM integrado por Esri ◄── Azure OpenAI gestionado por Esri   │
+│  Hosted Feature Layers  ◄── datos replicados de Enterprise      │
+│  WebMaps configurados   ◄── con embeddings generados            │
+│  LLM integrado por Esri ◄── Azure OpenAI gestionado por Esri    │
 └──────────────────────────────────────────────┬──────────────────┘
                                                │ HTTPS
                                                │
@@ -86,12 +86,12 @@ El cliente tiene la siguiente situación:
 │  COMPUTADORA DEL TÉCNICO (Con internet)                         │
 │                                                                 │
 │  Navegador Web                                                  │
-│  └── App Web (HTML/JS con ArcGIS Maps SDK 5.0)                 │
-│       ├── arcgis-map (WebMap de ArcGIS Online)                 │
-│       └── arcgis-assistant (chat IA integrado)                 │
-│            ├── arcgis-assistant-navigation-agent               │
-│            ├── arcgis-assistant-data-exploration-agent         │
-│            └── arcgis-assistant-help-agent                     │
+│  └── App Web (HTML/JS con ArcGIS Maps SDK 5.0)                  │
+│       ├── arcgis-map (WebMap de ArcGIS Online)                  │
+│       └── arcgis-assistant (chat IA integrado)                  │
+│            ├── arcgis-assistant-navigation-agent                │
+│            ├── arcgis-assistant-data-exploration-agent          │
+│            └── arcgis-assistant-help-agent                      │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
